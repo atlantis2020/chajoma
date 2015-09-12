@@ -12,14 +12,14 @@ function getNews(callback) {
 }
 
 io.on('connection', function (socket) {
-  var news = setInterval(function () {
-    getNews(function (message) {
-      socket.volatile.emit('news', message);
+    var news = setInterval(function () {
+        getNews(function (message) {
+            socket.volatile.emit('news', message);
+        });
+
+    }, 10 * 1000);
+
+    socket.on('disconnect', function () {
+        clearInterval(news);
     });
-
-  }, 10 * 1000);
-
-  socket.on('disconnect', function () {
-    clearInterval(news);
-  });
 });
