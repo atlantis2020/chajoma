@@ -9,11 +9,12 @@
 ```
 $ git clone git@github.com:ChaJoMa/chajoma.git
 $ cd chajoma
+$ npm install -g gulp
 $ npm install
 ```
 
 #### Running
 
 ```
-$ gulp server
+$ gulp
 ```
