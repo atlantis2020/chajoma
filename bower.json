@@ -16,6 +16,9 @@
   "dependencies": {
     "jquery": "~2.1.4",
     "normalize.css": "~3.0.3",
-    "mui": "~0.1.21"
+    "mui": "~0.1.21",
+    "socket.io": "~1.3.6"
+  },
+  "devDependencies": {
   }
 }

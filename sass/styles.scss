@@ -1,6 +1,5 @@
 @charset 'UTF-8';
 
-@import 'theme';
 
 .blocks:before,
 .blocks:after {
@@ -41,4 +40,13 @@
     + .block-half {
         float: right;
     }
+}
+
+img {
+    max-width: 100%;
+}
+
+#map {
+    min-height: 200px;
+    height: 70vh;
 }

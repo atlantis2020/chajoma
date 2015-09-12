@@ -62,3 +62,7 @@ h1 {
 
 img {
   max-width: 100%; }
+
+#map {
+  border: solid 1px;
+  height: 200px; }
