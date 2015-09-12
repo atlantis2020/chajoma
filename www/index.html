@@ -19,32 +19,23 @@
 
     <!-- // <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script> -->
 
-    <link rel="stylesheet" href="/www/stylesheets/vendor//leaflet-0.7.5/leaflet.css" />
+    <link rel="stylesheet" href="/www/stylesheets/vendor/leaflet-0.7.5/leaflet.css" />
 
     <script src="/jspm_packages/system.js"></script>
     <script src="/config.js"></script>
 
     <script>
       System.import('/www/javascripts/app');
-      // System.import('/www/javascripts/app');
-    </script>
-    <script>
-      // var socket = io.connect('http://localhost:3001');
-      // socket.on('news', function (data) {
-      //   console.log(data);
-      //   socket.emit('my other event', { my: 'data' });
-      // });
     </script>
 </head>
 <body>
 <div id="container" class="mui-container" data-mui-fluid="true">
-    <div id="top">
-        <div id="header-wrapper" class="mui-panel">
-            <div id="header">
-                <h1><a href="/www/index.html">ChaJoMa</a></h1>
+    <div id="top" class="mui-appbar mui-appbar-line-height" style="padding: 0 15px;">
+        <div class="mui-row">
+            <div class="mui-col-md-6">
+                ChaJoMa
             </div>
-            <div id="nav">
-            </div>
+            <div class="mui-col-md-6"></div>
         </div>
     </div>
     <div id="content-wrapper">
