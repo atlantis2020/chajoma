@@ -1,9 +1,17 @@
 /*global $, window, L, fullscreen */
 
+import io from 'socket.io-client';
+
 (function () {
     'use strict';
 
-    var doc = $(document);
+    var doc = $(document),
+        socket = io('http://localhost:3001');
+
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+    });
 
     doc.on('click', '.fullscreen-anchor', function (e) {
         e.preventDefault();
@@ -15,7 +23,8 @@
     });
 
     function initMap() {
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        var map = L.map('map').setView([51.505, -0.09], 13),
+            popup = L.popup();
 
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
             maxZoom: 18,
@@ -25,23 +34,11 @@
             id: 'mapbox.streets'
         }).addTo(map);
 
-        // L.marker([51.5, -0.09]).addTo(map)
-        //     .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-
         L.circle([51.508, -0.11], 50, {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5
         }).addTo(map).bindPopup("I am a circle.");
-
-        // L.polygon([
-        //     [51.509, -0.08],
-        //     [51.503, -0.06],
-        //     [51.51, -0.047]
-        // ]).addTo(map).bindPopup("I am a polygon.");
-
-
-        var popup = L.popup();
 
         function onMapClick(e) {
             popup
@@ -57,5 +54,4 @@
     $(function () {
         initMap();
     });
-
 }());

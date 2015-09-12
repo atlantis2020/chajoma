@@ -1,0 +1,1 @@
+module.exports = require("npm:cors@2.7.1/lib/index");

@@ -55,5 +55,5 @@ gulp.task('server', function () {
 });
 
 gulp.task('default', ['sass', 'sass:watch', 'server'], function () {
-    gulp.watch(files.js, ['js-lint']);
+    // gulp.watch(files.js, ['js-lint']);
 });

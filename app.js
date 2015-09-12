@@ -1,18 +1,25 @@
 var app = require('express')();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var cors = require('cors');
 
-var server = app.listen(3001, function () {
-  var host = server.address().address;
-  var port = server.address().port;
+app.use(cors());
+server.listen(3001);
 
-  console.log('Example app listening at http://%s:%s', host, port);
-});
-
+function getNews(callback) {
+    var msg = Date() + ' message';
+    return callback(msg);
+}
 
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
+  var news = setInterval(function () {
+    getNews(function (message) {
+      socket.volatile.emit('news', message);
+    });
+
+  }, 10 * 1000);
+
+  socket.on('disconnect', function () {
+    clearInterval(news);
   });
 });

@@ -3,13 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>ChaJoMa</title>
     <link rel="stylesheet" href="/bower_components/normalize.css/normalize.css">
+    <link rel="stylesheet" href="/www/stylesheets/styles.css">
 
     <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/www/javascripts/common.js"></script>
+    <!--
     <script type="text/javascript" src="/www/javascripts/app.js"></script>
-
+ -->
     <link href="/bower_components/mui/dist/css/mui.min.css" rel="stylesheet" type="text/css" />
     <script src="/bower_components/mui/dist/js/mui.min.js"></script>
 
@@ -19,8 +21,13 @@
 
     <link rel="stylesheet" href="/www/stylesheets/vendor//leaflet-0.7.5/leaflet.css" />
 
-    <link rel="stylesheet" href="/www/stylesheets/styles.css">
-    <script src="/bower_components/socket.io/lib/socket.js"></script>
+    <script src="/jspm_packages/system.js"></script>
+    <script src="/config.js"></script>
+
+    <script>
+      System.import('/www/javascripts/app');
+      // System.import('/www/javascripts/app');
+    </script>
     <script>
       // var socket = io.connect('http://localhost:3001');
       // socket.on('news', function (data) {
