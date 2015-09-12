@@ -1,0 +1,21 @@
+{
+  "name": "chajoma",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ChaJoMa",
+  "authors": [
+    "Marek <nospam.keram+chajoma@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "normalize.css": "~3.0.3",
+    "mui": "~0.1.21"
+  }
+}

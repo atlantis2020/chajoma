@@ -1,0 +1,44 @@
+@charset 'UTF-8';
+
+@import 'theme';
+
+.blocks:before,
+.blocks:after {
+    content:" ";
+    display:table
+}
+
+.blocks:after {
+    clear:both
+}
+
+.block-aside:first-child:last-child {
+    float:right
+}
+
+.block-main {
+    width: 62.2%;
+    float: left;
+
+    + .block-aside {
+        float: right;
+    }
+}
+
+.block-aside {
+    width: 37.25%;
+    float: left;
+
+    + .block-main {
+        float: right;
+    }
+}
+
+.block-half {
+    width: 50%;
+    float: left;
+
+    + .block-half {
+        float: right;
+    }
+}

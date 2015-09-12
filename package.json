@@ -1,0 +1,36 @@
+{
+  "name": "ChaJoMa",
+  "description": "",
+  "version": "1.0.0",
+  "dependencies": {
+    "serve-favicon": ">= 2.2.0",
+    "express": ">= 4.12.3",
+    "request": ">= 2.55.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "contributors": [],
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chajoma/chajoma.git"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-clean": "^0.3.1",
+    "gulp-eslint": "^0.15.0",
+    "gulp-jslint": "^0.2.2",
+    "gulp-notify": "^2.2.0",
+    "gulp-sass": "^2.0.4",
+    "gulp-webserver": "^0.9.1",
+    "yargs": "^3.15.0"
+  }
+}
