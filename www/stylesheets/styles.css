@@ -33,3 +33,10 @@ img {
 #map {
   min-height: 200px;
   height: 80vh; }
+
+.error-modal {
+  margin: 3em auto;
+  width: 400px;
+  min-height: 200px;
+  padding: 25px;
+  background: #fff; }

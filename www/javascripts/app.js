@@ -1,32 +1,12 @@
 /*global $, window, L, fullscreen */
 
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 
 (function (L) {
     'use strict';
 
     var doc = $(document),
         featureRenderer;
-
-    // var doc = $(document),
-    //     socket = io('http://localhost:3001');
-
-    // socket.on('news', function (data) {
-    //     console.log(data);
-    // });
-
-    // socket.on('connect_error', function () {
-    //     console.log('Socket connection error, disconnecting..');
-    //     socket.disconnect();
-    // });
-
-    // navigator.geolocation.getCurrentPosition(function(position) {
-    //     console.log('-t-', position.coords.latitude, position.coords.longitude);
-    // });
-
-    function reverseCoordinates(point) {
-        return [point[1], point[0]];
-    }
 
     featureRenderer = {
         drawMultiLineString: function (map, feature) {
@@ -46,6 +26,9 @@
         }
     }
 
+    function reverseCoordinates(point) {
+        return [point[1], point[0]];
+    }
 
     function initMap() {
         var map = L.map('map');
@@ -62,14 +45,9 @@
 
     }
 
-    function computeBoxCenter(coords) {
-        return [(coords[1] + coords[3]) / 2, (coords[0] + coords[2]) / 2];
-    }
-
     function getData(map) {
         return $.getJSON('/www/data/nepal-shakemap/cont-mi.json')
             .then(function (response) {
-                var center = computeBoxCenter(response.bbox);
                 map.setView(
                     new L.LatLng(
                         response.metadata.latitude,
@@ -89,9 +67,83 @@
         return map;
     }
 
-    $(function () {
-        var map = initMap();
+    function showErrorModal(message) {
+        var modal = $('<div />', {
+            class: 'error-modal',
+            html: message.join('<br />')
+        });
 
-        getData(map);
+        mui.overlay('on', modal[0]);
+    }
+
+    function hideErrorModal() {
+        $('.error-modal').each(function () {
+            mui.overlay('off', this);
+        });
+    };
+
+    function initSocketConnection(url, options) {
+        var socket = io(url, options);
+
+        socket.on('connect_error', function () {
+            showErrorModal(['Unable to receive data from server.', 'Trying reconnect..']);
+        });
+
+        socket.on('reconnect_failed', function () {
+            showErrorModal(['Receiving data and reconnecting failed.', 'Please try again later.']);
+        });
+
+        socket.on('connect', function () {
+            hideErrorModal();
+        });
+
+        return socket;
+    }
+
+
+    function drawDrones(drones) {
+        return drones.map(function (drone) {
+            return L.marker(drone);
+        })
+    }
+
+    function bindDronesEvents(socket, map) {
+        var drones_layer;
+
+        socket.on('drones', function (data) {
+            if (drones_layer) {
+                map.removeLayer(drones_layer);
+            }
+
+            setTimeout(function () {
+                drones_layer = L.layerGroup();
+
+                drawDrones(data)
+                    .map(function (marker) {
+                        return marker.addTo(drones_layer);
+                    });
+
+                map.addLayer(drones_layer);
+            }, 1500);
+        });
+
+        return socket;
+    }
+
+
+    $(function () {
+        var map = initMap(),
+        socket_url = 'http://localhost:3001',
+        socket_options = {
+            reconnectionDelay: 5000,
+            reconnectionAttempts: 3
+        };
+
+        getData(map)
+            .then(function () {
+                var socket = initSocketConnection(socket_url, socket_options);
+
+                bindDronesEvents(socket, map);
+            });
     });
 }(L));
