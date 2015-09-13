@@ -1,1 +1,0 @@
-module.exports = require("npm:debug@1.0.3/browser");

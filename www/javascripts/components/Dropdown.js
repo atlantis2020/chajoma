@@ -58,7 +58,9 @@ class Dropdown extends React.Component {
   }
 
   renderOption (option) {
-    return <li><a key={option.value} onMouseDown={this.setValue.bind(this, option)} onClick={this.setValue.bind(this, option)}>{option.label}</a></li>
+    return (<li key={option.value}>
+      <a onMouseDown={this.setValue.bind(this, option)} onClick={this.setValue.bind(this, option)}>{option.label}</a>
+    </li>);
   }
 
   buildMenu() {
@@ -76,19 +78,21 @@ class Dropdown extends React.Component {
       }
     }
   }
-
+// onMouseDown={this.handleMouseDown.bind(this)} onTouchEnd={this.handleMouseDown.bind(this)}
   render() {
-    let value = this.state.selected.label;
-    let menu = this.state.isOpen ? <div className="mui-dropdown-menu">{this.buildMenu()}</div> : null;
+    let value = (<span>{this.state.selected.label} <span className="mui-caret"></span></span>);
+    let menu = (<div className="mui-dropdown-menu" onMouseDown={this.handleMouseDown.bind(this)} onTouchEnd={this.handleMouseDown.bind(this)} >{this.buildMenu()}</div>);
 
     return (
-      <div className="mui-dropdown" onMouseDown={this.handleMouseDown.bind(this)} onTouchEnd={this.handleMouseDown.bind(this)} >
-        <button className="mui-btn mui-btn-primary" data-mui-toggle="dropdown">
-            {value}
-            <span className="mui-caret"></span>
+      <div className="mui-dropdown" >
+        <button className="mui-btn mui-btn-primary" data-mui-toggle="dropdown" >
+          {value}
         </button>
         {menu}
       </div>
     );
   }
 }
+
+export default Dropdown;
+

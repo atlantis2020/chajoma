@@ -1,1 +1,0 @@
-module.exports = require("npm:socket.io-parser@2.2.2/index");

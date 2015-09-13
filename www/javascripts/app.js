@@ -3,23 +3,29 @@
 import io from 'socket.io-client';
 import React from 'react';
 import Navigation from './components/Navigation.js';
-// import classNames from 'classnames';
+
 
 (function (L) {
     'use strict';
 
+
     var doc = $(document),
         featureRenderer,
-        views;
+        views,
+        map,
+        drones_layer,
+        socket,
+        features_layer,
+        active_view;
 
     featureRenderer = {
-        drawMultiLineString: function (map, feature) {
+        drawMultiLineString: function (layer, feature) {
             var coordinates = feature.geometry.coordinates.map(
                 function(line) {
                     return line.map(reverseCoordinates);
                 });
 
-            L.polygon(coordinates, feature.properties).addTo(map);
+            L.polygon(coordinates, feature.properties).addTo(layer);
         },
         drawCircle: function(map, feature) {
             L.circle([51.508, -0.11], 50, {
@@ -35,38 +41,39 @@ import Navigation from './components/Navigation.js';
     }
 
     function initMap() {
-        var map = L.map('map');
+        var osmUrl, osmAttrib, osm;
 
-        var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        var osmAttrib = '© <a href="http://openstreetmap.org">OpenStreetMap</a>';
-        var osm = new L.TileLayer(osmUrl, {
-            minZoom: 5, maxZoom: 16, attribution: osmAttrib
-        });
+        if (typeof map == 'undefined') {
+            map = L.map('map');
 
-        map.addLayer(osm);
+            osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            osmAttrib = '© <a href="http://openstreetmap.org">OpenStreetMap</a>';
+            osm = new L.TileLayer(osmUrl, {
+                minZoom: 5, maxZoom: 16, attribution: osmAttrib
+            });
+
+            map.addLayer(osm);
+        }
 
         return map;
-
     }
 
-    function getData(map) {
-        return $.getJSON('/www/data/nepal-shakemap/cont-mi.json')
-            .then(function (response) {
-                map.setView(
-                    new L.LatLng(
-                        response.metadata.latitude,
-                        response.metadata.longitude
-                    ), 7);
-                drawFeatures(map, response.features);
-            });
+    function getData() {
+        return $.getJSON('/www/data/nepal-shakemap/cont-mi.json');
     }
 
     function drawFeatures(map, features) {
         var fr = featureRenderer;
 
+        removeFeaturesLayer(map);
+
+        features_layer = L.layerGroup();
+
         features.map(function (feature) {
-            fr['draw' + feature.geometry.type](map, feature);
+            fr['draw' + feature.geometry.type](features_layer, feature);
         });
+
+        features_layer.addTo(map);
 
         return map;
     }
@@ -77,7 +84,10 @@ import Navigation from './components/Navigation.js';
             html: message.join('<br />')
         });
 
+        modal.hide();
+
         mui.overlay('on', modal[0]);
+        modal.fadeIn();
     }
 
     function hideErrorModal() {
@@ -87,14 +97,14 @@ import Navigation from './components/Navigation.js';
     };
 
     function initSocketConnection(url, options) {
-        var socket = io(url, options);
+        socket = io(url, options);
 
         socket.on('connect_error', function () {
-            showErrorModal(['Unable to receive data from server.', 'Trying reconnect..']);
+            showErrorModal(['Unable to receive data from server.', '(' + url + ')', 'Trying reconnect..']);
         });
 
         socket.on('reconnect_failed', function () {
-            showErrorModal(['Receiving data and reconnecting failed.', 'Please try again later.']);
+            showErrorModal(['<b>Receiving data and reconnecting failed.</b>', '(' + url + ')', 'Please try again later.']);
         });
 
         socket.on('connect', function () {
@@ -104,6 +114,29 @@ import Navigation from './components/Navigation.js';
         return socket;
     }
 
+    function removeFeaturesLayer(map) {
+        if (features_layer) {
+            map.removeLayer(features_layer);
+        }
+    }
+
+    function removeDrones(map) {
+        if (drones_layer) {
+            map.removeLayer(drones_layer);
+        }
+    }
+
+    function clearRealtime() {
+        removeFeaturesLayer(map);
+        removeDrones(map);
+        if (socket) {
+            socket.disconnect();
+        }
+    }
+
+    function clearPlanning() {
+        removeFeaturesLayer(map);
+    }
 
     function drawDrones(drones) {
         return drones.map(function (drone) {
@@ -112,14 +145,14 @@ import Navigation from './components/Navigation.js';
     }
 
     function bindDronesEvents(socket, map) {
-        var drones_layer;
+        removeDrones(map);
 
         socket.on('drones', function (data) {
-            if (drones_layer) {
-                map.removeLayer(drones_layer);
-            }
+            removeDrones(map);
 
             setTimeout(function () {
+                removeDrones(map);
+
                 drones_layer = L.layerGroup();
 
                 drawDrones(data)
@@ -138,41 +171,83 @@ import Navigation from './components/Navigation.js';
         var re = /drones=(http(s)?\:\/\/[^&]+)/,
             search = window.location.search;
 
-        return re.test(search) ? search.match(re)[1] : '127.0.0.1:3000'
+        return re.test(search) ? search.match(re)[1] : '127.0.0.1:3001'
     }
 
-    views = {
-        monitoring: function () {
+    window.views = {
+        realtime: function () {
+            if (active_view === 'realtime') {
+                return;
+            }
+            active_view = 'realtime';
+            console.log('realtime view');
             var map = initMap(),
                 socket_url = socketUrl(),
                 socket_options = {
                     reconnectionDelay: 5000,
                     reconnectionAttempts: 3
-                };
+                },
+                socket;
 
-            getData(map)
-                .then(function () {
-                    var socket = initSocketConnection(socket_url, socket_options);
+            clearPlanning();
 
-                    bindDronesEvents(socket, map);
+            getData().then(function (response) {
+                map.setView(
+                    new L.LatLng(
+                        response.metadata.latitude,
+                        response.metadata.longitude
+                    ), 7);
+
+                drawFeatures(map, response.features);
+
+                socket = initSocketConnection(socket_url, socket_options);
+                bindDronesEvents(socket, map);
+            });
+        },
+
+        planning: function () {
+            if (active_view === 'planning') {
+                return;
+            }
+            active_view = 'planning';
+            console.log('planning view');
+            var map = initMap();
+
+            clearRealtime(map);
+
+            getData()
+                .then(function (response) {
+                    map.setView(
+                        new L.LatLng(
+                            response.metadata.latitude,
+                            response.metadata.longitude
+                        ), 7);
+                    drawFeatures(map, response.features);
                 });
         },
 
-         renderDesign: function () {
+        map: function () {
+            if (active_view === 'map') {
+                return;
+            }
+            active_view = 'map';
+            console.log('map view');
+            var map = initMap();
 
+            clearRealtime(map);
+            clearPlanning(map);
+
+            getData()
+                .then(function (response) {
+                    map.setView(
+                        new L.LatLng(
+                            response.metadata.latitude,
+                            response.metadata.longitude
+                        ), 7);
+                    // drawFeatures(map, response.features);
+                })
         }
-    }
-
-    doc.on('click', '#views-nav a', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        // views[this.href.split('#')[1]]();
-        $('#views-nav .mui-btn-primary').text(this.innerHTML);
-    });
+    };
 
     React.render(<Navigation />, document.getElementById('views-nav'));
-
-    $(function () {
-        // var map = initMap();
-    });
 }(L));
