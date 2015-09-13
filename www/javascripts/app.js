@@ -136,6 +136,8 @@ import Navigation from './components/Navigation.js';
 
     function clearPlanning() {
         removeFeaturesLayer(map);
+        $('#planning-form').hide();
+
     }
 
     function drawDrones(drones) {
@@ -224,6 +226,8 @@ import Navigation from './components/Navigation.js';
                         ), 7);
                     drawFeatures(map, response.features);
                 });
+
+            $('#planning-form').show();
         },
 
         map: function () {
