@@ -130,14 +130,22 @@ import io from 'socket.io-client';
         return socket;
     }
 
+    function socketUrl() {
+        var re = /drones=(http(s)?\:\/\/[^&]+)/,
+            search = window.location.search;
+
+        return re.test(search) ? search.match(re)[1] : '127.0.0.1:3000'
+    }
 
     $(function () {
         var map = initMap(),
-        socket_url = 'http://localhost:3001',
+        socket_url = socketUrl(),
         socket_options = {
             reconnectionDelay: 5000,
             reconnectionAttempts: 3
         };
+
+        console.log(socket_url);
 
         getData(map)
             .then(function () {
