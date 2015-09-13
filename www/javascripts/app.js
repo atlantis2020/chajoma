@@ -142,7 +142,12 @@ import Navigation from './components/Navigation.js';
 
     function drawDrones(drones) {
         return drones.map(function (drone) {
-            return L.marker(drone);
+            var opacity = drone.battery > 50 ? 1 : 0.5;
+            console.log('drone data: ', drone, drone.battery, opacity);
+            return L.marker(drone.coords, {
+                opacity: opacity,
+                title: 'Id: ' + drone.id + ', Battery: ' + drone.battery + '%'
+            });
         })
     }
 
