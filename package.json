@@ -20,10 +20,8 @@
   },
   "devDependencies": {
     "gulp": "^3.9.0",
-    "gulp-clean": "^0.3.1",
     "gulp-eslint": "^0.15.0",
     "gulp-jslint": "^0.2.2",
-    "gulp-notify": "^2.2.0",
     "gulp-sass": "^2.0.4",
     "gulp-webserver": "^0.9.1",
     "yargs": "^3.15.0"
@@ -40,6 +38,14 @@
       "babel": "npm:babel-core@^5.8.22",
       "babel-runtime": "npm:babel-runtime@^5.8.20",
       "core-js": "npm:core-js@^1.1.0"
-    }
+    },
+    "ignore": [
+      "node_modules",
+      "jspm_packages",
+      "bower_components",
+      "src",
+      "test",
+      "tests"
+    ],
   }
 }
