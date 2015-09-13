@@ -3,11 +3,7 @@
   "description": "",
   "version": "1.0.0",
   "dependencies": {
-    "cors": "^2.7.1",
-    "express": "*",
-    "jspm": "^0.16.2",
-    "request": ">= 2.55.0",
-    "socket.io": "^1.3.6"
+    "jspm": "^0.16.2"
   },
   "files": [
     "LICENSE",
