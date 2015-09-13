@@ -1,12 +1,16 @@
 /*global $, window, L, fullscreen */
 
 import io from 'socket.io-client';
+import React from 'react';
+import Navigation from './components/Navigation.js';
+// import classNames from 'classnames';
 
 (function (L) {
     'use strict';
 
     var doc = $(document),
-        featureRenderer;
+        featureRenderer,
+        views;
 
     featureRenderer = {
         drawMultiLineString: function (map, feature) {
@@ -137,21 +141,38 @@ import io from 'socket.io-client';
         return re.test(search) ? search.match(re)[1] : '127.0.0.1:3000'
     }
 
+    views = {
+        monitoring: function () {
+            var map = initMap(),
+                socket_url = socketUrl(),
+                socket_options = {
+                    reconnectionDelay: 5000,
+                    reconnectionAttempts: 3
+                };
+
+            getData(map)
+                .then(function () {
+                    var socket = initSocketConnection(socket_url, socket_options);
+
+                    bindDronesEvents(socket, map);
+                });
+        },
+
+         renderDesign: function () {
+
+        }
+    }
+
+    doc.on('click', '#views-nav a', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // views[this.href.split('#')[1]]();
+        $('#views-nav .mui-btn-primary').text(this.innerHTML);
+    });
+
+    React.render(<Navigation />, document.getElementById('views-nav'));
+
     $(function () {
-        var map = initMap(),
-        socket_url = socketUrl(),
-        socket_options = {
-            reconnectionDelay: 5000,
-            reconnectionAttempts: 3
-        };
-
-        console.log(socket_url);
-
-        getData(map)
-            .then(function () {
-                var socket = initSocketConnection(socket_url, socket_options);
-
-                bindDronesEvents(socket, map);
-            });
+        // var map = initMap();
     });
 }(L));
